@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {  useEffect,  useState } from 'react';
 import PrimaryBtn from './ui/PrimaryBtn';
+import SecondryBtn from './ui/SecondryBtn';
+import DangerBtn from './ui/DangerBtn';
 
 const ResumeForm = () => {
-
-
-
 
 // retrive the form data from localStorage
   const data  = JSON.parse(localStorage.getItem('formData'))
@@ -22,9 +21,7 @@ const initialFormData = {
       {
         summaryText: '',
       },
-      {
-        summaryText: '',
-      },
+     
     ],
 
     education: [
@@ -80,13 +77,6 @@ localStorage.setItem("formData", JSON.stringify(formData))
 },[formData])
 
 
-
-
-
-
-
-
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -115,6 +105,16 @@ localStorage.setItem("formData", JSON.stringify(formData))
           summaryText: '',
         },
       ],
+    }));
+  };
+
+    const deleteSummary = (index) => {
+
+        const updatedSummaries = [...formData.summaries];
+    updatedSummaries.splice(index, 1);
+    setFormData((prevData) => ({
+      ...prevData,
+      summaries: updatedSummaries,
     }));
   };
 
@@ -233,6 +233,15 @@ localStorage.setItem("formData", JSON.stringify(formData))
     }));
   };
 
+  const deleteSkill = (index) => {
+    const updatedSkills = [...formData.skills];
+    updatedSkills.splice(index, 1);
+    setFormData((prevData) => ({
+      ...prevData,
+      skills: updatedSkills,
+    }));
+  };
+
   const addEducation = () => {
     setFormData((prevData) => ({
       ...prevData,
@@ -247,6 +256,17 @@ localStorage.setItem("formData", JSON.stringify(formData))
           description: '',
         },
       ],
+    }));
+  };
+
+
+
+    const deleteEducation = (index) => {
+    const updatedEducation = [...formData.education];
+    updatedEducation.splice(index, 1);
+    setFormData((prevData) => ({
+      ...prevData,
+      education: updatedEducation,
     }));
   };
 
@@ -268,6 +288,17 @@ localStorage.setItem("formData", JSON.stringify(formData))
       ],
     }));
   };
+
+
+ const deleteExperience = (index) => {
+    const updatedExperience = [...formData.experience];
+    updatedExperience.splice(index, 1);
+    setFormData((prevData) => ({
+      ...prevData,
+      experience: updatedExperience,
+    }));
+  };
+
 
 // submit the form
   const handleSubmit = (e) => {
@@ -365,31 +396,38 @@ localStorage.setItem("formData", JSON.stringify(formData))
         </div>
 
 {/* summary  */}
-<div className="mb-4">
-          <label>Summaries</label>
-          <div className='border rounded mb-2'>
+ <div className="mb-4">
+          <label htmlFor="summaries">Summaries</label>
           {formData.summaries.map((summary, index) => (
-            <div key={index} className=" p-2 ">
+            <div key={index} className="flex mb-2">
               <textarea
-                id={`summary${index}`}
-                name={`summary${index}`}
                 value={summary.summaryText}
                 onChange={(e) => handleSummaryChange(index, e.target.value)}
-                rows="2"
-                className="w-full border rounded p-2"
+                className="w-full border rounded p-2 mr-2"
               />
+
+{
+
+formData.summaries.length > 1 &&
+
+<DangerBtn
+ type="button"
+                onClick={() => deleteSummary(index)}
+                title='Delete'
+/>
+}
+
+
+             
             </div>
           ))}
-          </div>
-          {formData.summaries.length < 5 && (
-            <button
-              type="button"
-              onClick={addSummary}
-              className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-            >
-              Add Summary
-            </button>
-          )}
+
+<SecondryBtn  type="button"
+            onClick={addSummary}
+            title='Add Summary'
+            />
+
+          
         </div>
 
 
@@ -408,9 +446,9 @@ localStorage.setItem("formData", JSON.stringify(formData))
         {/* experience */}
 
         <div className="mb-4">
-          <label>Experience</label>
+          <label htmlFor="experience">Experience</label>
           {formData.experience.map((exp, index) => (
-            <div key={index} className="border rounded p-2 mb-2">
+            <div key={index} className="border rounded p-4 mb-4">
               <div className="mb-2">
                 <label htmlFor={`companyName${index}`}>Company Name</label>
                 <input
@@ -424,7 +462,7 @@ localStorage.setItem("formData", JSON.stringify(formData))
                   className="w-full border rounded p-2"
                 />
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between mb-2">
                 <div className="w-1/3 mr-2">
                   <label htmlFor={`startDate${index}`}>Start Date</label>
                   <input
@@ -466,7 +504,7 @@ localStorage.setItem("formData", JSON.stringify(formData))
               </div>
               </div>
               <div className="mb-2">
-                <label htmlFor={`technologies${index}`}>Technologies Used</label>
+                <label htmlFor={`technologies${index}`}>Technologies</label>
                 <input
                   type="text"
                   id={`technologies${index}`}
@@ -479,7 +517,7 @@ localStorage.setItem("formData", JSON.stringify(formData))
                 />
               </div>
               <div className="mb-2">
-                <label htmlFor={`description${index}`}>Description</label>
+                <label>Experience Description</label>
                 <textarea
                   id={`description${index}`}
                   name={`description${index}`}
@@ -487,19 +525,18 @@ localStorage.setItem("formData", JSON.stringify(formData))
                   onChange={(e) =>
                     handleExperienceChange(index, 'description', e.target.value)
                   }
-                  rows="2"
+                  rows="3"
                   className="w-full border rounded p-2"
                 />
               </div>
+              {formData.experience.length > 1 &&               
+              <DangerBtn  type="button"
+                onClick={() => deleteExperience(index)} title='Delete Experience'/>
+              }
             </div>
           ))}
-          <button
-            type="button"
-            onClick={addExperience}
-            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-          >
-            Add Experience
-          </button>
+
+          <SecondryBtn type="button" onClick={addExperience} title='Add Experience'/>
         </div>
 
         {/* education  */}
@@ -587,41 +624,55 @@ localStorage.setItem("formData", JSON.stringify(formData))
                   className="w-full border rounded p-2"
                 />
               </div>
+              
+                {formData.education.length > 1 &&               
+              <DangerBtn  type="button"
+                onClick={() => deleteEducation(index)} title='Delete Education'/>
+              }
+           
+
+
+
             </div>
           ))}
-          <button
-            type="button"
-            onClick={addEducation}
-            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-          >
-            Add Education
-          </button>
+
+
+<SecondryBtn type='button'   onClick={addEducation} title='Add Education'/>
+
+         
         </div>
 
 
         {/* skills  */}
-        <div className="mb-4">
+       <div className="mb-4">
           <label htmlFor="skills">Skills</label>
           {formData.skills.map((skill, index) => (
             <div key={index} className="flex mb-2">
               <input
                 type="text"
-                name="skills"
                 value={skill}
                 onChange={(e) => handleSkillChange(index, e.target.value)}
-                className="w-full border rounded p-2"
+                className="w-full border rounded p-2 mr-2"
               />
-              {index === formData.skills.length - 1 && (
-                <button
-                  type="button"
-                  onClick={addSkill}
-                  className="ml-2 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                >
-                  +
-                </button>
-              )}
+
+{formData.skills.length > 1 &&
+
+<DangerBtn type="button"
+                onClick={() => deleteSkill(index)} title='Delete'/>
+              }
+
+           
             </div>
           ))}
+
+
+
+<SecondryBtn  type="button"
+            onClick={addSkill}
+            title='Add Skill'
+            />
+
+          
         </div>
 
 
@@ -663,13 +714,10 @@ localStorage.setItem("formData", JSON.stringify(formData))
             </div>
           ))}
           {formData.languages.length < 5 && (
-            <button
-              type="button"
-              onClick={addLanguage}
-              className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-            >
-              Add Language
-            </button>
+            
+            <SecondryBtn type='button'   onClick={addLanguage} title='Add Language'/>
+            
+            
           )}
         </div>
 
@@ -718,7 +766,6 @@ localStorage.setItem("formData", JSON.stringify(formData))
                     className="w-full border rounded p-2"
                   />
                 </div>
-              </div>
               <div className="mb-2">
                 <label htmlFor={`role${projIndex}`}>Role</label>
                 <input
@@ -731,6 +778,7 @@ localStorage.setItem("formData", JSON.stringify(formData))
                   }
                   className="w-full border rounded p-2"
                 />
+              </div>
               </div>
               <div className="mb-2">
                 <label htmlFor={`companyName${projIndex}`}>Company Name</label>
@@ -765,23 +813,19 @@ localStorage.setItem("formData", JSON.stringify(formData))
                     />
                   </div>
                 ))}
-                <button
-                  type="button"
-                  onClick={() => addProjectDescription(projIndex)}
-                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                >
-                  Add Description
-                </button>
+
+<SecondryBtn type='button'   onClick={() => addProjectDescription(projIndex)} title='Add Description'/>
+
+
+               
               </div>
             </div>
           ))}
-          <button
-            type="button"
-            onClick={addProject}
-            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-          >
-            Add Project
-          </button>
+
+
+<SecondryBtn type='button'   onClick={addProject} title='Add Project'/>
+
+         
         </div>
 
 
