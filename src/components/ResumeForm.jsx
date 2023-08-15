@@ -1,81 +1,77 @@
-import {  useEffect,  useState } from 'react';
-import PrimaryBtn from './ui/PrimaryBtn';
-import SecondryBtn from './ui/SecondryBtn';
-import DangerBtn from './ui/DangerBtn';
+import { useEffect, useState } from "react";
+import PrimaryBtn from "./ui/PrimaryBtn";
+import SecondryBtn from "./ui/SecondryBtn";
+import DangerBtn from "./ui/DangerBtn";
 
 const ResumeForm = () => {
-
-// retrive the form data from localStorage
-  const data  = JSON.parse(localStorage.getItem('formData'))
+  // retrive the form data from localStorage
+  const data = JSON.parse(localStorage.getItem("formData"));
 
   // defin the initial data for the form
-const initialFormData = {
-    fullName: '',
-    techrole:'',
-     email: '',
-    phone: '',
-    address: '',
-    location: '',
+  const initialFormData = {
+    fullName: "",
+    techrole: "",
+    email: "",
+    phone: "",
+    address: "",
+    location: "",
 
- summaries: [
+    summaries: [
       {
-        summaryText: '',
+        summaryText: "",
       },
-     
     ],
 
     education: [
       {
-        university: '',
-        startDate: '',
-        endDate: '',
-        marks: '',
-        stream: '',
-        description: '',
+        university: "",
+        startDate: "",
+        endDate: "",
+        marks: "",
+        stream: "",
+        description: "",
       },
     ],
     experience: [
       {
-        companyName: '',
-        startDate: '',
-        endDate: '',
-        position: '',
-        technologies: '',
-        description: '',
+        companyName: "",
+        startDate: "",
+        endDate: "",
+        position: "",
+        technologies: "",
+        description: "",
       },
     ],
-    skills: ['Skill 1'], // Default skill
+    skills: ["Skill 1"], // Default skill
     profilePicture: null,
-     languages: [
+    languages: [
       {
-        language: '',
-        proficiency: '',
+        language: "",
+        proficiency: "",
       },
     ],
     projects: [
       {
-        title: '',
-        startDate: '',
-        endDate: '',
-        role: '',
-        companyName: '',
-        descriptions: [''],
+        title: "",
+        startDate: "",
+        endDate: "",
+        role: "",
+        companyName: "",
+        descriptions: [""],
       },
     ],
-  }
+  };
 
-// state for collection the form data
-  const [formData, setFormData] = useState(data ||  initialFormData);
+  // state for collection the form data
+  const [formData, setFormData] = useState(data || initialFormData);
 
+  // state for handeling image errors
+  const [imageError, setImageError] = useState('');
 
   // whenever the form data changes add the form data into the localStorage
-useEffect(() => {
-
-
-localStorage.setItem("formData", JSON.stringify(formData))
-
-},[formData])
-
+  useEffect(() => {
+    localStorage.setItem("formData", JSON.stringify(formData));
+  }, [formData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -84,7 +80,6 @@ localStorage.setItem("formData", JSON.stringify(formData))
       [name]: value,
     }));
   };
-
 
   const handleSummaryChange = (index, value) => {
     const updatedSummaries = [...formData.summaries];
@@ -95,22 +90,20 @@ localStorage.setItem("formData", JSON.stringify(formData))
     }));
   };
 
-
   const addSummary = () => {
     setFormData((prevData) => ({
       ...prevData,
       summaries: [
         ...prevData.summaries,
         {
-          summaryText: '',
+          summaryText: "",
         },
       ],
     }));
   };
 
-    const deleteSummary = (index) => {
-
-        const updatedSummaries = [...formData.summaries];
+  const deleteSummary = (index) => {
+    const updatedSummaries = [...formData.summaries];
     updatedSummaries.splice(index, 1);
     setFormData((prevData) => ({
       ...prevData,
@@ -118,8 +111,7 @@ localStorage.setItem("formData", JSON.stringify(formData))
     }));
   };
 
-
-   const handleLanguageChange = (index, field, value) => {
+  const handleLanguageChange = (index, field, value) => {
     const updatedLanguages = [...formData.languages];
     updatedLanguages[index][field] = value;
     setFormData((prevData) => ({
@@ -128,20 +120,27 @@ localStorage.setItem("formData", JSON.stringify(formData))
     }));
   };
 
-
   const addLanguage = () => {
     setFormData((prevData) => ({
       ...prevData,
       languages: [
         ...prevData.languages,
         {
-          language: '',
-          proficiency: '',
+          language: "",
+          proficiency: "",
         },
       ],
     }));
   };
 
+  const deleteLanguage = (index) => {
+    const updatedLanguages = [...formData.languages];
+    updatedLanguages.splice(index, 1);
+    setFormData((prevData) => ({
+      ...prevData,
+      languages: updatedLanguages,
+    }));
+  };
 
   const handleEducationChange = (index, field, value) => {
     const updatedEducation = [...formData.education];
@@ -152,7 +151,7 @@ localStorage.setItem("formData", JSON.stringify(formData))
     }));
   };
 
-   const handleExperienceChange = (index, field, value) => {
+  const handleExperienceChange = (index, field, value) => {
     const updatedExperience = [...formData.experience];
     updatedExperience[index][field] = value;
     setFormData((prevData) => ({
@@ -170,12 +169,39 @@ localStorage.setItem("formData", JSON.stringify(formData))
     }));
   };
 
+
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    setFormData((prevData) => ({
-      ...prevData,
-      profilePicture: file,
-    }));
+
+    if (file) {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+
+      img.onload = () => {
+        if (
+          file.type === 'image/jpeg' ||
+          file.type === 'image/png' ||
+          file.type === 'image/jpg'
+        ) {
+          if (
+            img.width === 500 &&
+            img.height === 500 &&
+            file.size <= 20 * 1024 * 1024 &&
+            file.size >= 500 * 1024
+          ) {
+            setFormData((prevData) => ({
+              ...prevData,
+              profilePicture: file,
+            }));
+          } else {
+            setImageError('Image does not meet size requirements');
+          }
+        } else {
+          setImageError('Invalid image format');
+        }
+      };
+    }
   };
 
 
@@ -188,8 +214,7 @@ localStorage.setItem("formData", JSON.stringify(formData))
     }));
   };
 
-
-    const handleProjectDescriptionChange = (projIndex, descIndex, value) => {
+  const handleProjectDescriptionChange = (projIndex, descIndex, value) => {
     const updatedProjects = [...formData.projects];
     updatedProjects[projIndex].descriptions[descIndex] = value;
     setFormData((prevData) => ({
@@ -198,19 +223,18 @@ localStorage.setItem("formData", JSON.stringify(formData))
     }));
   };
 
-
-    const addProject = () => {
+  const addProject = () => {
     setFormData((prevData) => ({
       ...prevData,
       projects: [
         ...prevData.projects,
         {
-          title: '',
-          startDate: '',
-          endDate: '',
-          role: '',
-          companyName: '',
-          descriptions: [''],
+          title: "",
+          startDate: "",
+          endDate: "",
+          role: "",
+          companyName: "",
+          descriptions: [""],
         },
       ],
     }));
@@ -218,18 +242,26 @@ localStorage.setItem("formData", JSON.stringify(formData))
 
   const addProjectDescription = (projIndex) => {
     const updatedProjects = [...formData.projects];
-    updatedProjects[projIndex].descriptions.push('');
+    updatedProjects[projIndex].descriptions.push("");
     setFormData((prevData) => ({
       ...prevData,
       projects: updatedProjects,
     }));
   };
 
+  const deleteProjectDescription = (projIndex, descIndex) => {
+    const updatedProjects = [...formData.projects];
+    updatedProjects[projIndex].descriptions.splice(descIndex, 1);
+    setFormData((prevData) => ({
+      ...prevData,
+      projects: updatedProjects,
+    }));
+  };
 
   const addSkill = () => {
     setFormData((prevData) => ({
       ...prevData,
-      skills: [...prevData.skills, ''],
+      skills: [...prevData.skills, ""],
     }));
   };
 
@@ -248,20 +280,18 @@ localStorage.setItem("formData", JSON.stringify(formData))
       education: [
         ...prevData.education,
         {
-          university: '',
-          startDate: '',
-          endDate: '',
-          marks: '',
-          stream: '',
-          description: '',
+          university: "",
+          startDate: "",
+          endDate: "",
+          marks: "",
+          stream: "",
+          description: "",
         },
       ],
     }));
   };
 
-
-
-    const deleteEducation = (index) => {
+  const deleteEducation = (index) => {
     const updatedEducation = [...formData.education];
     updatedEducation.splice(index, 1);
     setFormData((prevData) => ({
@@ -270,27 +300,24 @@ localStorage.setItem("formData", JSON.stringify(formData))
     }));
   };
 
-
-
   const addExperience = () => {
     setFormData((prevData) => ({
       ...prevData,
       experience: [
         ...prevData.experience,
         {
-          companyName: '',
-          startDate: '',
-          endDate: '',
-          position: '',
-          technologies: '',
-          description: '',
+          companyName: "",
+          startDate: "",
+          endDate: "",
+          position: "",
+          technologies: "",
+          description: "",
         },
       ],
     }));
   };
 
-
- const deleteExperience = (index) => {
+  const deleteExperience = (index) => {
     const updatedExperience = [...formData.experience];
     updatedExperience.splice(index, 1);
     setFormData((prevData) => ({
@@ -299,24 +326,21 @@ localStorage.setItem("formData", JSON.stringify(formData))
     }));
   };
 
-
-// submit the form
+  // submit the form
   const handleSubmit = (e) => {
     e.preventDefault();
-    localStorage.clear() // clear the localStorage after submit the form
-    setFormData(initialFormData)
+    localStorage.clear(); // clear the localStorage after submit the form
+    setFormData(initialFormData);
     console.log(formData);
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 border rounded shadow">
-
-        {/* title  */}
+    <section className="max-w-3xl mx-auto p-6 border rounded shadow">
+      {/* title  */}
       <h2 className="text-2xl font-bold mb-4">Resume Builder</h2>
 
       {/* form start  */}
       <form onSubmit={handleSubmit}>
-
         {/* full name  */}
         <div className="mb-4">
           <label htmlFor="fullName">Full Name</label>
@@ -324,19 +348,21 @@ localStorage.setItem("formData", JSON.stringify(formData))
             type="text"
             id="fullName"
             name="fullName"
+            required
             value={formData.fullName}
             onChange={handleChange}
             className="w-full border rounded p-2"
           />
         </div>
-        
+
         {/* tech role  */}
-         <div className="mb-4">
+        <div className="mb-4">
           <label htmlFor="techrole">Tech Role</label>
           <input
             type="text"
             id="techrole"
             name="techrole"
+            required
             value={formData.techrole}
             onChange={handleChange}
             className="w-full border rounded p-2"
@@ -344,12 +370,13 @@ localStorage.setItem("formData", JSON.stringify(formData))
         </div>
 
         {/* email  */}
-                 <div className="mb-4">
+        <div className="mb-4">
           <label htmlFor="email">Email</label>
           <input
             type="email"
             id="email"
             name="email"
+            required
             value={formData.email}
             onChange={handleChange}
             className="w-full border rounded p-2"
@@ -363,6 +390,7 @@ localStorage.setItem("formData", JSON.stringify(formData))
             type="tel"
             id="phone"
             name="phone"
+            required
             value={formData.phone}
             onChange={handleChange}
             className="w-full border rounded p-2"
@@ -389,14 +417,15 @@ localStorage.setItem("formData", JSON.stringify(formData))
             type="text"
             id="location"
             name="location"
+            required
             value={formData.location}
             onChange={handleChange}
             className="w-full border rounded p-2"
           />
         </div>
 
-{/* summary  */}
- <div className="mb-4">
+        {/* summary  */}
+        <div className="mb-4">
           <label htmlFor="summaries">Summaries</label>
           {formData.summaries.map((summary, index) => (
             <div key={index} className="flex mb-2">
@@ -406,30 +435,18 @@ localStorage.setItem("formData", JSON.stringify(formData))
                 className="w-full border rounded p-2 mr-2"
               />
 
-{
-
-formData.summaries.length > 1 &&
-
-<DangerBtn
- type="button"
-                onClick={() => deleteSummary(index)}
-                title='Delete'
-/>
-}
-
-
-             
+              {formData.summaries.length > 1 && (
+                <DangerBtn
+                  type="button"
+                  onClick={() => deleteSummary(index)}
+                  title="Delete"
+                />
+              )}
             </div>
           ))}
 
-<SecondryBtn  type="button"
-            onClick={addSummary}
-            title='Add Summary'
-            />
-
-          
+          <SecondryBtn type="button" onClick={addSummary} title="Add Summary" />
         </div>
-
 
         {/* profile picture  */}
         <div className="mb-4">
@@ -438,11 +455,18 @@ formData.summaries.length > 1 &&
             type="file"
             id="profilePicture"
             name="profilePicture"
+            required
             accept="image/*"
             onChange={handleFileChange}
             className="w-full border rounded p-2"
           />
+          <p className= "text-xs opacity-80 font-medium mt-1">&#9888; Optimal UI Imagery: 500&#10005;500 pixels, jpg/jpeg/png format, 500KB - 20MB size range.</p>
+{imageError && (
+            <p className="text-red-500 text-sm mt-1">{imageError}</p>
+          )}
         </div>
+
+
         {/* experience */}
 
         <div className="mb-4">
@@ -457,7 +481,7 @@ formData.summaries.length > 1 &&
                   name={`companyName${index}`}
                   value={exp.companyName}
                   onChange={(e) =>
-                    handleExperienceChange(index, 'companyName', e.target.value)
+                    handleExperienceChange(index, "companyName", e.target.value)
                   }
                   className="w-full border rounded p-2"
                 />
@@ -466,12 +490,12 @@ formData.summaries.length > 1 &&
                 <div className="w-1/3 mr-2">
                   <label htmlFor={`startDate${index}`}>Start Date</label>
                   <input
-                    type="text"
+                    type="month"
                     id={`startDate${index}`}
                     name={`startDate${index}`}
                     value={exp.startDate}
                     onChange={(e) =>
-                      handleExperienceChange(index, 'startDate', e.target.value)
+                      handleExperienceChange(index, "startDate", e.target.value)
                     }
                     className="w-full border rounded p-2"
                   />
@@ -479,29 +503,29 @@ formData.summaries.length > 1 &&
                 <div className="w-1/3 mr-2">
                   <label htmlFor={`endDate${index}`}>End Date</label>
                   <input
-                    type="text"
+                    type="month"
                     id={`endDate${index}`}
                     name={`endDate${index}`}
                     value={exp.endDate}
                     onChange={(e) =>
-                      handleExperienceChange(index, 'endDate', e.target.value)
+                      handleExperienceChange(index, "endDate", e.target.value)
                     }
                     className="w-full border rounded p-2"
                   />
                 </div>
-              <div className="mb-2">
-                <label htmlFor={`position${index}`}>Position</label>
-                <input
-                  type="text"
-                  id={`position${index}`}
-                  name={`position${index}`}
-                  value={exp.position}
-                  onChange={(e) =>
-                    handleExperienceChange(index, 'position', e.target.value)
-                  }
-                  className="w-full border rounded p-2"
-                />
-              </div>
+                <div className="mb-2">
+                  <label htmlFor={`position${index}`}>Position</label>
+                  <input
+                    type="text"
+                    id={`position${index}`}
+                    name={`position${index}`}
+                    value={exp.position}
+                    onChange={(e) =>
+                      handleExperienceChange(index, "position", e.target.value)
+                    }
+                    className="w-full border rounded p-2"
+                  />
+                </div>
               </div>
               <div className="mb-2">
                 <label htmlFor={`technologies${index}`}>Technologies</label>
@@ -511,7 +535,11 @@ formData.summaries.length > 1 &&
                   name={`technologies${index}`}
                   value={exp.technologies}
                   onChange={(e) =>
-                    handleExperienceChange(index, 'technologies', e.target.value)
+                    handleExperienceChange(
+                      index,
+                      "technologies",
+                      e.target.value
+                    )
                   }
                   className="w-full border rounded p-2"
                 />
@@ -523,20 +551,27 @@ formData.summaries.length > 1 &&
                   name={`description${index}`}
                   value={exp.description}
                   onChange={(e) =>
-                    handleExperienceChange(index, 'description', e.target.value)
+                    handleExperienceChange(index, "description", e.target.value)
                   }
                   rows="3"
                   className="w-full border rounded p-2"
                 />
               </div>
-              {formData.experience.length > 1 &&               
-              <DangerBtn  type="button"
-                onClick={() => deleteExperience(index)} title='Delete Experience'/>
-              }
+              {formData.experience.length > 1 && (
+                <DangerBtn
+                  type="button"
+                  onClick={() => deleteExperience(index)}
+                  title="Delete Experience"
+                />
+              )}
             </div>
           ))}
 
-          <SecondryBtn type="button" onClick={addExperience} title='Add Experience'/>
+          <SecondryBtn
+            type="button"
+            onClick={addExperience}
+            title="Add Experience"
+          />
         </div>
 
         {/* education  */}
@@ -552,7 +587,7 @@ formData.summaries.length > 1 &&
                   name={`university${index}`}
                   value={edu.university}
                   onChange={(e) =>
-                    handleEducationChange(index, 'university', e.target.value)
+                    handleEducationChange(index, "university", e.target.value)
                   }
                   className="w-full border rounded p-2"
                 />
@@ -561,12 +596,12 @@ formData.summaries.length > 1 &&
                 <div className="w-1/3 mr-2">
                   <label htmlFor={`startDate${index}`}>Start Date</label>
                   <input
-                    type="text"
+                    type="month"
                     id={`startDate${index}`}
                     name={`startDate${index}`}
                     value={edu.startDate}
                     onChange={(e) =>
-                      handleEducationChange(index, 'startDate', e.target.value)
+                      handleEducationChange(index, "startDate", e.target.value)
                     }
                     className="w-full border rounded p-2"
                   />
@@ -574,12 +609,12 @@ formData.summaries.length > 1 &&
                 <div className="w-1/3 mr-2">
                   <label htmlFor={`endDate${index}`}>End Date</label>
                   <input
-                    type="text"
+                    type="month"
                     id={`endDate${index}`}
                     name={`endDate${index}`}
                     value={edu.endDate}
                     onChange={(e) =>
-                      handleEducationChange(index, 'endDate', e.target.value)
+                      handleEducationChange(index, "endDate", e.target.value)
                     }
                     className="w-full border rounded p-2"
                   />
@@ -592,7 +627,7 @@ formData.summaries.length > 1 &&
                     name={`marks${index}`}
                     value={edu.marks}
                     onChange={(e) =>
-                      handleEducationChange(index, 'marks', e.target.value)
+                      handleEducationChange(index, "marks", e.target.value)
                     }
                     className="w-full border rounded p-2"
                   />
@@ -606,7 +641,7 @@ formData.summaries.length > 1 &&
                   name={`stream${index}`}
                   value={edu.stream}
                   onChange={(e) =>
-                    handleEducationChange(index, 'stream', e.target.value)
+                    handleEducationChange(index, "stream", e.target.value)
                   }
                   className="w-full border rounded p-2"
                 />
@@ -618,33 +653,32 @@ formData.summaries.length > 1 &&
                   name={`description${index}`}
                   value={edu.description}
                   onChange={(e) =>
-                    handleEducationChange(index, 'description', e.target.value)
+                    handleEducationChange(index, "description", e.target.value)
                   }
                   rows="2"
                   className="w-full border rounded p-2"
                 />
               </div>
-              
-                {formData.education.length > 1 &&               
-              <DangerBtn  type="button"
-                onClick={() => deleteEducation(index)} title='Delete Education'/>
-              }
-           
 
-
-
+              {formData.education.length > 1 && (
+                <DangerBtn
+                  type="button"
+                  onClick={() => deleteEducation(index)}
+                  title="Delete Education"
+                />
+              )}
             </div>
           ))}
 
-
-<SecondryBtn type='button'   onClick={addEducation} title='Add Education'/>
-
-         
+          <SecondryBtn
+            type="button"
+            onClick={addEducation}
+            title="Add Education"
+          />
         </div>
 
-
         {/* skills  */}
-       <div className="mb-4">
+        <div className="mb-4">
           <label htmlFor="skills">Skills</label>
           {formData.skills.map((skill, index) => (
             <div key={index} className="flex mb-2">
@@ -655,26 +689,18 @@ formData.summaries.length > 1 &&
                 className="w-full border rounded p-2 mr-2"
               />
 
-{formData.skills.length > 1 &&
-
-<DangerBtn type="button"
-                onClick={() => deleteSkill(index)} title='Delete'/>
-              }
-
-           
+              {formData.skills.length > 1 && (
+                <DangerBtn
+                  type="button"
+                  onClick={() => deleteSkill(index)}
+                  title="Delete"
+                />
+              )}
             </div>
           ))}
 
-
-
-<SecondryBtn  type="button"
-            onClick={addSkill}
-            title='Add Skill'
-            />
-
-          
+          <SecondryBtn type="button" onClick={addSkill} title="Add Skill" />
         </div>
-
 
         {/* languages  */}
         <div className="mb-4">
@@ -687,9 +713,10 @@ formData.summaries.length > 1 &&
                   type="text"
                   id={`language${index}`}
                   name={`language${index}`}
+                  required
                   value={language.language}
                   onChange={(e) =>
-                    handleLanguageChange(index, 'language', e.target.value)
+                    handleLanguageChange(index, "language", e.target.value)
                   }
                   className="w-full border rounded p-2"
                 />
@@ -699,9 +726,10 @@ formData.summaries.length > 1 &&
                 <select
                   id={`proficiency${index}`}
                   name={`proficiency${index}`}
+                  required
                   value={language.proficiency}
                   onChange={(e) =>
-                    handleLanguageChange(index, 'proficiency', e.target.value)
+                    handleLanguageChange(index, "proficiency", e.target.value)
                   }
                   className="w-full border rounded p-2"
                 >
@@ -711,18 +739,27 @@ formData.summaries.length > 1 &&
                   <option value="Medium">Medium</option>
                 </select>
               </div>
+
+              {formData.languages.length > 1 && (
+                <DangerBtn
+                  type="button"
+                  onClick={() => deleteLanguage(index)}
+                  title="Delete Language"
+                />
+              )}
             </div>
           ))}
           {formData.languages.length < 5 && (
-            
-            <SecondryBtn type='button'   onClick={addLanguage} title='Add Language'/>
-            
-            
+            <SecondryBtn
+              type="button"
+              onClick={addLanguage}
+              title="Add Language"
+            />
           )}
         </div>
 
-{/* projects  */}
-<div className="mb-4">
+        {/* projects  */}
+        <div className="mb-4">
           <label>Projects</label>
           {formData.projects.map((project, projIndex) => (
             <div key={projIndex} className="border rounded p-4 mb-4">
@@ -734,7 +771,7 @@ formData.summaries.length > 1 &&
                   name={`title${projIndex}`}
                   value={project.title}
                   onChange={(e) =>
-                    handleProjectChange(projIndex, 'title', e.target.value)
+                    handleProjectChange(projIndex, "title", e.target.value)
                   }
                   className="w-full border rounded p-2"
                 />
@@ -743,12 +780,16 @@ formData.summaries.length > 1 &&
                 <div className="w-1/3 mr-2">
                   <label htmlFor={`startDate${projIndex}`}>Start Date</label>
                   <input
-                    type="text"
+                    type="month"
                     id={`startDate${projIndex}`}
                     name={`startDate${projIndex}`}
                     value={project.startDate}
                     onChange={(e) =>
-                      handleProjectChange(projIndex, 'startDate', e.target.value)
+                      handleProjectChange(
+                        projIndex,
+                        "startDate",
+                        e.target.value
+                      )
                     }
                     className="w-full border rounded p-2"
                   />
@@ -756,29 +797,29 @@ formData.summaries.length > 1 &&
                 <div className="w-1/3 mr-2">
                   <label htmlFor={`endDate${projIndex}`}>End Date</label>
                   <input
-                    type="text"
+                    type="month"
                     id={`endDate${projIndex}`}
                     name={`endDate${projIndex}`}
                     value={project.endDate}
                     onChange={(e) =>
-                      handleProjectChange(projIndex, 'endDate', e.target.value)
+                      handleProjectChange(projIndex, "endDate", e.target.value)
                     }
                     className="w-full border rounded p-2"
                   />
                 </div>
-              <div className="mb-2">
-                <label htmlFor={`role${projIndex}`}>Role</label>
-                <input
-                  type="text"
-                  id={`role${projIndex}`}
-                  name={`role${projIndex}`}
-                  value={project.role}
-                  onChange={(e) =>
-                    handleProjectChange(projIndex, 'role', e.target.value)
-                  }
-                  className="w-full border rounded p-2"
-                />
-              </div>
+                <div className="mb-2">
+                  <label htmlFor={`role${projIndex}`}>Role</label>
+                  <input
+                    type="text"
+                    id={`role${projIndex}`}
+                    name={`role${projIndex}`}
+                    value={project.role}
+                    onChange={(e) =>
+                      handleProjectChange(projIndex, "role", e.target.value)
+                    }
+                    className="w-full border rounded p-2"
+                  />
+                </div>
               </div>
               <div className="mb-2">
                 <label htmlFor={`companyName${projIndex}`}>Company Name</label>
@@ -788,7 +829,11 @@ formData.summaries.length > 1 &&
                   name={`companyName${projIndex}`}
                   value={project.companyName}
                   onChange={(e) =>
-                    handleProjectChange(projIndex, 'companyName', e.target.value)
+                    handleProjectChange(
+                      projIndex,
+                      "companyName",
+                      e.target.value
+                    )
                   }
                   className="w-full border rounded p-2"
                 />
@@ -796,7 +841,7 @@ formData.summaries.length > 1 &&
               <div className="mb-2">
                 <label>Project Descriptions</label>
                 {project.descriptions.map((description, descIndex) => (
-                  <div key={descIndex} className="mb-2">
+                  <div key={descIndex} className="mb-2 flex gap-2">
                     <textarea
                       id={`description${projIndex}-${descIndex}`}
                       name={`description${projIndex}-${descIndex}`}
@@ -811,28 +856,35 @@ formData.summaries.length > 1 &&
                       rows="2"
                       className="w-full border rounded p-2"
                     />
+
+                    {project.descriptions.length > 1 && (
+                      <DangerBtn
+                        type="button"
+                        onClick={() =>
+                          deleteProjectDescription(projIndex, descIndex)
+                        }
+                        title="Delete"
+                      />
+                    )}
                   </div>
                 ))}
 
-<SecondryBtn type='button'   onClick={() => addProjectDescription(projIndex)} title='Add Description'/>
-
-
-               
+                <SecondryBtn
+                  type="button"
+                  onClick={() => addProjectDescription(projIndex)}
+                  title="Add Description"
+                />
               </div>
             </div>
           ))}
 
-
-<SecondryBtn type='button'   onClick={addProject} title='Add Project'/>
-
-         
+          <SecondryBtn type="button" onClick={addProject} title="Add Project" />
         </div>
 
-
         {/* submit button  */}
-       <PrimaryBtn type='submit' title={'Create Resume'}/>
+        <PrimaryBtn type="submit" title={"Create Resume"} />
       </form>
-    </div>
+    </section>
   );
 };
 
