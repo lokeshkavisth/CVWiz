@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import Logo from '../Logo';
 import { useAuth0 } from '@auth0/auth0-react';
 import PrimaryBtn from './PrimaryBtn';
+import SignOut from '../auth/SignOut';
+import SignIn from '../auth/SignIn';
+import Profile from '../auth/Profile';
 
 //  navbar links data
 const navMenu = [
@@ -14,7 +17,7 @@ const navMenu = [
 
 const Navbar = () => {
 
-const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
+   const { user, isAuthenticated, isLoading } = useAuth0();
 
     const navLinks = navMenu.map(({id, title, path}) => (
 
@@ -39,24 +42,10 @@ const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
 
       {/* Sign Up Button */}
       <div className="flex items-center space-x-4">
-        {isAuthenticated ? (
-          <>
-            <img
-              src={user.picture}
-              alt={user.name}
-              className="h-8 w-8 rounded-full"
-            />
-            <span className="text-white">{user.nickname}</span>
-            <PrimaryBtn type='button' title='Logout' onClick={() => logout({ returnTo: window.location.origin })} className={'bg-white text-black'}/>
-            </>
-        ) : (
-          <PrimaryBtn type='button' title='LogIn/SignUp'  onClick={() => loginWithRedirect()} className={'bg-white text-black'}/>
-        )}
+        
+{isAuthenticated ? <SignOut/> : <SignIn/>}
+ <Profile/>
       </div>
-
-
-
-
     </nav>
   );
 };
