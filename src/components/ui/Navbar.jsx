@@ -9,8 +9,8 @@ import Profile from '../auth/Profile';
 
 //  navbar links data
 const navMenu = [
-    {id:1, title: 'Home', path:"#"},
-    {id:2, title: 'About', path:"#"},
+    {id:1, title: 'Home', path:"/"},
+    {id:2, title: 'Create', path:"/create-resume"},
     {id:3, title: 'Services', path:"#"},
     {id:4, title: 'Contact', path:"#"},
 ]
