@@ -11,9 +11,8 @@ import Profile from '../auth/Profile';
 const navMenu = [
     {id:1, title: 'Home', path:"/"},
     {id:2, title: 'Create', path:"/create-resume"},
-    {id:3, title: 'Services', path:"#"},
-    {id:4, title: 'Contact', path:"#"},
-]
+    {id:3, title: 'Resume', path:"resume"},
+   ]
 
 const Navbar = () => {
 
@@ -31,14 +30,14 @@ const Navbar = () => {
  return (
     <nav className="bg-blue-500 p-4 flex justify-between items-center sticky top-0 w-full z-50 mb-5">
       {/* Logo */}
-      <div>
+      <div className='flex items-center gap-10'>
         <Logo/>
-             </div>
 
       {/* Links */}
       <ul className="flex space-x-4">
      {navLinks}
       </ul>
+   </div>
 
       {/* Sign Up Button */}
       <div className="flex items-center space-x-4">

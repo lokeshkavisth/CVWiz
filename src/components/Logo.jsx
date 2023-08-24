@@ -5,7 +5,7 @@ const Logo = () => {
   return (
     <Link to={'/'}>
     {/* <img src={LOGO} alt="Resume Builder" className="w-20 mr-2"/> */}
-     <h2 className='text-white text-xl font-semibold'>Logo</h2>
+     <h2 className='text-white text-xl font-semibold m-0'>Resume Builder</h2>
     </Link>
   )
 }

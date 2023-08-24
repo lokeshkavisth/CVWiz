@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap");
+html,
+body {
+  font-family: "Open Sans", sans-serif;
+}
+h1 {
+  @apply text-2xl font-bold;
+}
+
+h2 {
+  @apply font-semibold text-xl mb-2 capitalize;
+}
+
+h3 {
+  @apply font-semibold text-sm capitalize;
+}
+
+h5 {
+  @apply text-gray-500 text-xs mb-2;
+}
+
+p {
+  @apply text-sm leading-6;
+}
