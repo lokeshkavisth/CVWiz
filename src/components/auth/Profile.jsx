@@ -11,7 +11,7 @@ const Profile = () => {
   return (
     isAuthenticated && <div className="flex items-center gap-2">
         <img src={user.picture} alt={user.nickname} className="w-8 aspect-square rounded-full"/>
-        <h2 className="capitalize text-white font-semibold">Hello, {user.nickname}</h2>
+        <h3 className="text-white">Hello, {user.nickname}</h3>
         </div>    
   );
 };

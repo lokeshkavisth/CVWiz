@@ -40,10 +40,9 @@ const Navbar = () => {
    </div>
 
       {/* Sign Up Button */}
-      <div className="flex items-center space-x-4">
-        
-{isAuthenticated ? <SignOut/> : <SignIn/>}
+      <div className="flex items-center space-x-4">        
  <Profile/>
+{isAuthenticated ? <SignOut/> : <SignIn/>}
       </div>
     </nav>
   );
