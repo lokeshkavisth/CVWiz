@@ -1,12 +1,24 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Link } from "react-router-dom";
+import PrimaryBtn from "../components/ui/PrimaryBtn";
+import { useReactToPrint } from "react-to-print";
 
 const imgLink =
   "https://shotkit.com/wp-content/uploads/2021/06/cool-profile-pic-matheus-ferrero.jpeg";
 
 const ResumeOne = () => {
+
+
+// download resume 
+const pdfRef = useRef();
+const downloadResume =  useReactToPrint({
+  content: () => pdfRef.current,
+});
+
+
+
   return (
-    <div className="flex w-full max-w-5xl mx-auto my-10 border">
+       <div ref={pdfRef} className="flex w-full max-w-5xl mx-auto border relative group">
       <div className="flex-1 p-8 rounded-lg space-y-10">
         {/* name */}
         <div className="flex items-center gap-4">
@@ -138,7 +150,7 @@ const ResumeOne = () => {
       </div>
 
       {/* right side bar */}
-      <div className="w-full max-w-xs bg-green-900 text-white p-8 pt-36 space-y-6">
+      <div className="min-w-max bg-green-900 text-white p-8 pt-36 space-y-6">
         {/* Right Side: Personal Info */}
         <div>
           <h2>Details</h2>
@@ -166,7 +178,17 @@ const ResumeOne = () => {
           </ul>
         </div>
       </div>
+
+
+
+{/* download button  */}
+<div className="absolute top-5 right-5 group-hover:block hidden transition">
+  <PrimaryBtn title='Download' type='button' onClick={downloadResume}/>
+</div>
     </div>
+
+   
+
   );
 };
 

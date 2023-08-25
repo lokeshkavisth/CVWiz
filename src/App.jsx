@@ -6,6 +6,7 @@ const App = () => {
     <div>
     <Navbar/>
      <Route/>
+     <footer className='mt-10 text-center py-2'>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Possimus, qui.</footer>
     </div>
   )
 }
