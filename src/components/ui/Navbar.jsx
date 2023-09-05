@@ -2,10 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '../Logo';
 import { useAuth0 } from '@auth0/auth0-react';
-import PrimaryBtn from './PrimaryBtn';
-import SignOut from '../auth/SignOut';
-import SignIn from '../auth/SignIn';
-import Profile from '../auth/Profile';
+import Profile from '../../auth/Profile';
+import SignOut from '../../auth/SignOut';
+import SignIn from '../../auth/SignIn';
+
 
 //  navbar links data
 const navMenu = [
@@ -21,22 +21,24 @@ const Navbar = () => {
     const navLinks = navMenu.map(({id, title, path}) => (
 
 <li key={id}>
-          <Link to={path} className="text-white hover:text-blue-300">
+          <Link to={path} className="text-white hover:text-blue-300 capitalize">
             {title}
           </Link>
         </li>
     ))
 
  return (
-    <nav className="bg-blue-500 p-4 flex justify-between items-center sticky top-0 w-full z-50 mb-10">
+    <header className="bg-gray-900 p-4 flex justify-between items-center sticky top-0 w-full z-50 mb-10">
       {/* Logo */}
       <div className='flex items-center gap-10'>
         <Logo/>
 
-      {/* Links */}
+     <nav>
+       {/* Links */}
       <ul className="flex space-x-4">
      {navLinks}
       </ul>
+     </nav>
    </div>
 
       {/* Sign Up Button */}
@@ -44,7 +46,7 @@ const Navbar = () => {
  <Profile/>
 {isAuthenticated ? <SignOut/> : <SignIn/>}
       </div>
-    </nav>
+    </header>
   );
 };
 

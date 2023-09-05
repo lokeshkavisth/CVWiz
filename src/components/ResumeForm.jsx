@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import PrimaryBtn from "./ui/PrimaryBtn";
 import SecondryBtn from "./ui/SecondryBtn";
 import DangerBtn from "./ui/DangerBtn";
+import { useAuth0 } from "@auth0/auth0-react";
+import SignIn from "../auth/SignIn";
 
 const ResumeForm = () => {
   // retrive the form data from localStorage
@@ -333,6 +335,24 @@ const ResumeForm = () => {
     setFormData(initialFormData);
     console.log(formData);
   };
+
+const { user, isAuthenticated } = useAuth0();
+if(!user && !isAuthenticated){
+
+  return(
+
+<section className="grid place-items-center h-screen text-center">
+  <div>
+  <h2>SignIn to create Resume</h2>
+  <SignIn/>
+</div>
+</section>
+
+  )
+
+}
+
+
 
   return (
     <section className="max-w-3xl mx-auto p-6 border rounded shadow">
