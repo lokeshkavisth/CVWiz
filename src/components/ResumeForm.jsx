@@ -4,6 +4,7 @@ import SecondryBtn from "./ui/SecondryBtn";
 import DangerBtn from "./ui/DangerBtn";
 import { useAuth0 } from "@auth0/auth0-react";
 import SignIn from "../auth/SignIn";
+import resumeApi from "../api/resumeApi";
 
 const ResumeForm = () => {
   // retrive the form data from localStorage
@@ -44,7 +45,7 @@ const ResumeForm = () => {
         description: "",
       },
     ],
-    skills: ["Skill 1"], // Default skill
+    skills: [""], 
     profilePicture: null,
     languages: [
       {
@@ -189,8 +190,8 @@ const ResumeForm = () => {
           if (
             img.width === 500 &&
             img.height === 500 &&
-            file.size <= 20 * 1024 * 1024 &&
-            file.size >= 500 * 1024
+            file.size >= 20 * 1024 &&
+            file.size <= 5 * 1024  * 1024
           ) {
             setFormData((prevData) => ({
               ...prevData,
@@ -333,7 +334,9 @@ const ResumeForm = () => {
     e.preventDefault();
     localStorage.clear(); // clear the localStorage after submit the form
     setFormData(initialFormData);
-    console.log(formData);
+    console.log(e)
+    resumeApi("POST", 'create', formData)
+    
   };
 
 const { user, isAuthenticated } = useAuth0();
@@ -902,7 +905,7 @@ if(!user && !isAuthenticated){
         </div>
 
         {/* submit button  */}
-        <PrimaryBtn type="submit" title={"Create Resume"} />
+        <PrimaryBtn type="submit" title={"Create Resume"} disabled={imageError !== ''}/>
       </form>
     </section>
   );
