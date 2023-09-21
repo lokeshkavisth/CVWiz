@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PrimaryBtn from "./ui/PrimaryBtn";
 import SecondryBtn from "./ui/SecondryBtn";
 import DangerBtn from "./ui/DangerBtn";
@@ -45,8 +45,8 @@ const ResumeForm = () => {
         description: "",
       },
     ],
-    skills: [""], 
-    profilePicture: null,
+    skills: [""],
+    profilePicture: '',
     languages: [
       {
         language: "",
@@ -69,7 +69,9 @@ const ResumeForm = () => {
   const [formData, setFormData] = useState(data || initialFormData);
 
   // state for handeling image errors
-  const [imageError, setImageError] = useState('');
+  const [imageError, setImageError] = useState("");
+
+  const fileInputRef = useRef(null);
 
   // whenever the form data changes add the form data into the localStorage
   useEffect(() => {
@@ -172,41 +174,55 @@ const ResumeForm = () => {
     }));
   };
 
-
-
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
+    const selectedFile = e.target.files[0];
 
-    if (file) {
-      const img = new Image();
-      img.src = URL.createObjectURL(file);
+    // Check if the file exists
+    if (!selectedFile) {
+      setImageError("No file selected");
+      return;
+    }
 
-      img.onload = () => {
-        if (
-          file.type === 'image/jpeg' ||
-          file.type === 'image/png' ||
-          file.type === 'image/jpg'
-        ) {
-          if (
-            img.width === 500 &&
-            img.height === 500 &&
-            file.size >= 20 * 1024 &&
-            file.size <= 5 * 1024  * 1024
-          ) {
-            setFormData((prevData) => ({
-              ...prevData,
-              profilePicture: file,
-            }));
-          } else {
-            setImageError('Image does not meet size requirements');
-          }
+    // Check if the file size is within the specified range (20KB to 5MB).
+    if (selectedFile.size < 20000 || selectedFile.size > 5000000) {
+      setImageError("File size must be between 20KB and 5MB");
+      return;
+    }
+
+    // Check if the selected file is an image (you can refine this check)
+    if (!selectedFile.type.startsWith("image/")) {
+      setImageError("Invalid file format. Please select an image.");
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const image = new Image();
+      image.src = e.target.result;
+
+      image.onload = () => {
+        if (image.width === 500 && image.height === 500) {
+          // Assuming you have a state variable 'setFormData' to update the form data
+          setFormData((prevData) => ({
+            ...prevData,
+            profilePicture: e.target.result,
+          }));
+          setImageError("")
         } else {
-          setImageError('Invalid image format');
+          setImageError("Image dimensions must be 500x500 pixels");
         }
       };
-    }
-  };
+    };
 
+    // Handle errors during file reading
+    reader.onerror = () => {
+      setImageError("Error reading the file");
+    };
+
+    // Read the selected file
+    reader.readAsDataURL(selectedFile);
+  };
 
   const handleProjectChange = (index, field, value) => {
     const updatedProjects = [...formData.projects];
@@ -334,28 +350,26 @@ const ResumeForm = () => {
     e.preventDefault();
     localStorage.clear(); // clear the localStorage after submit the form
     setFormData(initialFormData);
-    console.log(e)
-    resumeApi("POST", 'create', formData)
-    
+
+     // Reset the file input's value
+  if (fileInputRef.current) {
+    fileInputRef.current.value = "";
+  }
+
+    resumeApi("POST", "create", formData);
   };
 
-const { user, isAuthenticated } = useAuth0();
-if(!user && !isAuthenticated){
-
-  return(
-
-<section className="grid place-items-center h-screen text-center">
-  <div>
-  <h2>SignIn to create Resume</h2>
-  <SignIn/>
-</div>
-</section>
-
-  )
-
-}
-
-
+  const { user, isAuthenticated } = useAuth0();
+  if (!user && !isAuthenticated) {
+    return (
+      <section className="grid place-items-center h-screen text-center">
+        <div>
+          <h2>SignIn to create Resume</h2>
+          <SignIn />
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="max-w-3xl mx-auto p-6 border rounded shadow">
@@ -479,16 +493,19 @@ if(!user && !isAuthenticated){
             id="profilePicture"
             name="profilePicture"
             required
-            accept="image/*"
+            accept=".jpg, .jpeg, .png"
             onChange={handleFileChange}
+            ref={fileInputRef}
             className="w-full border rounded p-2"
           />
-          <p className= "text-xs opacity-80 font-medium mt-1">&#9888; Optimal UI Imagery: 500&#10005;500 pixels, jpg/jpeg/png format, 500KB - 20MB size range.</p>
-{imageError && (
+          <p className="text-xs opacity-80 font-medium mt-1">
+            &#9888; Optimal UI Imagery: 500&#10005;500 pixels, jpg/jpeg/png
+            format, 500KB - 20MB size range.
+          </p>
+          {imageError && (
             <p className="text-red-500 text-sm mt-1">{imageError}</p>
           )}
         </div>
-
 
         {/* experience */}
 
@@ -905,7 +922,11 @@ if(!user && !isAuthenticated){
         </div>
 
         {/* submit button  */}
-        <PrimaryBtn type="submit" title={"Create Resume"} disabled={imageError !== ''}/>
+        <PrimaryBtn
+          type="submit"
+          title={"Create Resume"}
+          disabled={imageError !== ""}
+        />
       </form>
     </section>
   );
