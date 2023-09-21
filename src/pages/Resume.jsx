@@ -1,4 +1,3 @@
-import React from 'react'
 import ResumeOne from '../layouts/ResumeOne'
 import { useAuth0 } from '@auth0/auth0-react';
 import SignIn from '../auth/SignIn';
