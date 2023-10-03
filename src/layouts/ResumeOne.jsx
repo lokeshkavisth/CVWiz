@@ -1,30 +1,34 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import PrimaryBtn from "../components/ui/PrimaryBtn";
-import { useReactToPrint } from "react-to-print";
 import resumeApi from "../api/resumeApi";
 import DangerBtn from "../components/ui/DangerBtn";
-// import Slider from "react-slick";
-import {AiFillDelete,AiOutlineDownload,AiFillEdit} from 'react-icons/ai'
-
-// const imgLink =
-//   "https://shotkit.com/wp-content/uploads/2021/06/cool-profile-pic-matheus-ferrero.jpeg";
+import { AiFillDelete, AiOutlineDownload, AiFillEdit } from "react-icons/ai";
+import html2PDF from "html2pdf.js";
 
 const ResumeOne = () => {
   const [resumes, setResumes] = useState([]);
 
   // download resume
-  const pdfRef = useRef();
-  const downloadResume = useReactToPrint({
-    content: () => pdfRef.current,
-  });
 
-  
+  const downloadResume = async (id) => {
+    const content = document.getElementById("resume" + id);
+    const options = {
+      jsPDF: {
+        format: "a4",
+      },
+      html2canvas: { letterRendering: true, useCORS: true, logging: true },
+      margin: 1,
+      image: { type: "jpeg", quality: 1 },
+      filename: "myfile.pdf",
+    };
+    html2PDF(content, options);
+  };
 
   // delete resume
-  const deleteResume = async(id) => {
-    const res = await resumeApi('DELETE',id )
-    console.log('delete', res)
+  const deleteResume = async (id) => {
+    const res = await resumeApi("DELETE", id);
+    console.log("delete", res);
     if (res.data) setResumes(res.data);
   };
 
@@ -39,7 +43,6 @@ const ResumeOne = () => {
     getResumes();
   }, []);
 
-
   return (
     <section className="grid grid-cols-1 xl:grid-cols-2 max-w-screen-2xl mx-auto gap-4">
       {resumes?.length == 0 ? (
@@ -47,11 +50,11 @@ const ResumeOne = () => {
           <h2>No Resume Found!</h2>
         </div>
       ) : (
-        resumes?.map(({ id, USER_DATA }) => (
+        resumes?.map(({ id, USER_DATA }, index) => (
           <div
             key={id}
-            ref={pdfRef}
-         className='!flex w-full max-w-5xl mx-auto relative group border'
+            id={"resume" + index}
+            className="!flex w-full max-w-5xl mx-auto relative group border"
           >
             <div className="flex-1 p-8 rounded-lg space-y-4">
               {/* name */}
@@ -213,15 +216,16 @@ const ResumeOne = () => {
             <div className="absolute top-5 right-5 group-hover:block hidden transition space-x-4">
               <div className="flex flex-col gap-2">
                 <PrimaryBtn
-                title={<AiOutlineDownload/>}
-                type="button"
-                onClick={downloadResume}
-              /> 
-              <PrimaryBtn
-                title={<AiFillEdit/>}
-                type="button"
-              />
-              <DangerBtn title={<AiFillDelete/>} type="button" onClick={()=>deleteResume(id)} />
+                  title={<AiOutlineDownload />}
+                  type="button"
+                  onClick={() => downloadResume(index)}
+                />
+                <PrimaryBtn title={<AiFillEdit />} type="button" />
+                <DangerBtn
+                  title={<AiFillDelete />}
+                  type="button"
+                  onClick={() => deleteResume(id)}
+                />
               </div>
             </div>
           </div>
